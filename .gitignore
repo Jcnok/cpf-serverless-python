@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+*.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+*.sqlite3
+
+# Poetry
+poetry.lock
+# (Mantenha no Git se quiser controle total das versões - recomendo que sim)
+
+# Azure Functions local settings
+local.settings.json
+
+# IDEs e ferramentas
+.vscode/
+.idea/
+*.swp
+*.sublime-workspace
+*.sublime-project
+
+# Test, coverage e logs
+.coverage
+*.log
+htmlcov/
+.tox/
+.cache/
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+*.pyc
+
+# Diretórios e arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Docs automáticas
+_site/
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Docker/CI (se usar)
+docker-compose.yml
+*.iml
+
+# Scripts auxiliares
+*.sh
+
+# Arquivos sensíveis
+*.pem
+*.key
+*.crt
+.env*
+
+# GitHub workflows (deixe .github/ no repo)
+# (Não ignore .github/, apenas arquivos temporários .bak etc)
