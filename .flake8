@@ -1,0 +1,22 @@
+# .flake8 - Configuração Profissional para Projetos Python
+
+[flake8]
+# Ignora pastas de ambiente virtual, plugins, e cache
+exclude = .venv, .continue, __pycache__, .git, .mypy_cache
+# Máximo de caracteres por linha
+max-line-length = 88
+# Ignora avisos específicos (exemplo E203 e W503 são preferências do Black)
+ignore = E203, W503
+# Mostra códigos de erro com as mensagens
+show-source = True
+# Permite checar arquivos .py em subdiretórios
+recursive = True
+# Lista de arquivos estendidos a checar se desejar (opcional)
+# filename = *.py
+# Configuração de complexidade ciclomatica máxima
+max-complexity = 10
+
+# Enable/disable specific checks as needed (descomente para ajustar)
+# select = E,F,W,C90
+# count = True
+# statistics = True
