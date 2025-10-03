@@ -22,6 +22,7 @@ local.settings.json
 # IDEs e ferramentas
 .vscode/
 .idea/
+.continue/
 *.swp
 *.sublime-workspace
 *.sublime-project
