@@ -61,7 +61,7 @@ def validate_cpf_handler(req: func.HttpRequest) -> func.HttpResponse:
     except pydantic.ValidationError as e:
         logger.error(f"Validation error: {e}")
         return func.HttpResponse(
-            body='{"message": "Invalid request body. Ensure you provide a JSON with a "cpf" field."}',
+            body='{"message": "Invalid request body. Ensure you provide a JSON with a \\"cpf\\" field."}',
             status_code=400,
             mimetype="application/json"
         )
