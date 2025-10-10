@@ -9,10 +9,14 @@ readme = "README.md"
 python = "^3.12"
 azure-functions = "^1.23.0"
 pycpfcnpj = "^1.8"
+pydantic = "^2.9.0"
+requests = "^2.32.3"
+python-dotenv = "^1.0.1"
 
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.2"
+pytest-asyncio = "^0.23.8"
 black = "^25.9.0"
 flake8 = "^7.3.0"
 mypy = "^1.18.2"
