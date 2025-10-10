@@ -17,7 +17,7 @@ poetry.lock
 # (Mantenha no Git se quiser controle total das versões - recomendo que sim)
 
 # Azure Functions local settings
-local.settings.json
+src/functions/cpf_validation/local.settings.json
 
 # IDEs e ferramentas
 .vscode/
@@ -63,5 +63,15 @@ docker-compose.yml
 *.crt
 .env*
 
-# GitHub workflows (deixe .github/ no repo)
-# (Não ignore .github/, apenas arquivos temporários .bak etc)
+# Local python packages
+.python_packages/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Azurite artifacts
+__blobstorage__
+__queuestorage__
+__azurite_db*__.json

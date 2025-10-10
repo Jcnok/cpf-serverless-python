@@ -48,6 +48,12 @@ func --version
 # Verificar autenticação
 az account show
 ```
+---
+
+### Estrutura de Funções Azure
+
+- Todas as Azure Functions devem ser criadas e organizadas em subpastas dentro de `src/functions/<nome_da_funcao>`.
+- Siga sempre os padrões de nomeação e estrutura do projeto principal descritos no README.md.
 
 ---
 

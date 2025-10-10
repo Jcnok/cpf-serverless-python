@@ -64,9 +64,49 @@ Repositório para desenvolvimento de microsserviço serverless destinado à vali
 4. **Ative o ambiente virtual:**
    ```bash
    poetry shell
+
    ```
 
 ---
+## Exemplo de Função Inicial (src/functions/cpf_validation)
+
+```
+import azure.functions as func
+import datetime
+import json
+import logging
+
+app = func.FunctionApp()
+
+@app.route(route="ValidarCPF", auth_level=func.AuthLevel.FUNCTION)
+def ValidarCPF(req: func.HttpRequest) -> func.HttpResponse:
+    logging.info('Python HTTP trigger function processed a request.')
+
+    name = req.params.get('name')
+    if not name:
+        try:
+            req_body = req.get_json()
+        except ValueError:
+            pass
+        else:
+            name = req_body.get('name')
+
+    if name:
+        return func.HttpResponse(f"Hello, {name}. This HTTP triggered function executed successfully.")
+    else:
+        return func.HttpResponse(
+             "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
+             status_code=200
+        )
+
+```
+1. **Inicialização**
+   ```bash
+   func start
+
+   ```
+---
+
 ## 🔧 Setup das Ferramentas Azure para Desenvolvimento e Deploy (WSL2/Ubuntu)
 
 Esta seção descreve o processo completo de configuração do ambiente de desenvolvimento para Azure Functions em ambiente **WSL2/Ubuntu**. Siga os passos abaixo para instalar, configurar e validar as ferramentas necessárias.
