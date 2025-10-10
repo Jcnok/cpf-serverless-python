@@ -8,6 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.12"
 azure-functions = "^1.23.0"
+pycpfcnpj = "^1.8"
 
 
 [tool.poetry.group.dev.dependencies]
