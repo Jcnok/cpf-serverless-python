@@ -17,6 +17,7 @@ poetry.lock
 # (Mantenha no Git se quiser controle total das versões - recomendo que sim)
 
 # Azure Functions local settings
+local.settings.json
 src/functions/cpf_validation/local.settings.json
 
 # IDEs e ferramentas
