@@ -36,9 +36,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: 'Azure Login'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: 'Deploy to Azure Functions'
         uses: Azure/functions-action@v1
         with:
-          app-name: 'meu-cpf-function' # Replace with your function app name
+          app-name: 'meu-cpf-function'
           package: '.'
-          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
