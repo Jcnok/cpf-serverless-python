@@ -519,6 +519,6 @@ Contribuições são bem-vindas! Por favor, leia o arquivo [CONTRIBUTING.md](CON
 Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
 
 ---
-# teste de novo ajuste
+
 > Para dúvidas, contribuições ou sugestões, abra uma [Issue](https://github.com/Jcnok/cpf-serverless-python/issues) ou consulte o arquivo de contribuição!
 ```
