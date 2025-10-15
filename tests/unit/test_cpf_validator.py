@@ -20,11 +20,7 @@ def test_validate_formatted_cpf():
     assert cpfcnpj.validate("987.654.321-00") is True
 
 
-@pytest.mark.parametrize("cpf", [
-    "11111111111",
-    "22222222222",
-    "99999999999"
-])
+@pytest.mark.parametrize("cpf", ["11111111111", "22222222222", "99999999999"])
 def test_validate_repeated_digits_cpf(cpf):
     """Testa CPFs de dígitos repetidos (todos inválidos)."""
     assert cpfcnpj.validate(cpf) is False

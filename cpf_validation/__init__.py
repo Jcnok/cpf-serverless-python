@@ -1,6 +1,7 @@
 import sys
 import os
 import json
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../")))
 
 import azure.functions as func  # noqa: E402
