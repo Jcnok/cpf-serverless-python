@@ -1,10 +1,12 @@
 from pydantic import BaseModel, Field
 
+
 class CPFRequest(BaseModel):
     """
     Represents the request body for CPF validation.
     """
     cpf: str = Field(..., description="The CPF number to be validated.")
+
 
 class CPFResponse(BaseModel):
     """

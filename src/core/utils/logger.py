@@ -2,6 +2,7 @@ import logging
 import sys
 import json
 
+
 class JsonFormatter(logging.Formatter):
     """
     Custom formatter to output logs in JSON format.
@@ -14,8 +15,9 @@ class JsonFormatter(logging.Formatter):
             "name": record.name,
         }
         if record.exc_info:
-            log_record['exc_info'] = self.formatException(record.exc_info)
+            log_record["exc_info"] = self.formatException(record.exc_info)
         return json.dumps(log_record)
+
 
 def get_logger(name: str) -> logging.Logger:
     """

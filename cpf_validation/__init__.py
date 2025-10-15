@@ -1,16 +1,18 @@
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+import json
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../")))
 
-import azure.functions as func
-import pydantic
-from pycpfcnpj import cpfcnpj
+import azure.functions as func  # noqa: E402
+import pydantic  # noqa: E402
+from pycpfcnpj import cpfcnpj  # noqa: E402
 
-from src.core.models.http_models import CPFRequest, CPFResponse
-from src.core.utils.logger import get_logger
-from src.core.utils.rate_limiter import is_rate_limited
+from src.core.models.http_models import CPFRequest, CPFResponse  # noqa: E402
+from src.core.utils.logger import get_logger  # noqa: E402
+from src.core.utils.rate_limiter import is_rate_limited  # noqa: E402
 
 logger = get_logger(__name__)
+
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     # Rate limiting check
@@ -57,8 +59,12 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
     except pydantic.ValidationError as e:
         logger.error(f"Validation error: {e}")
+        error_message = {
+            "message": "Invalid request body. "
+            'Ensure you provide a JSON with a "cpf" field.'
+        }
         return func.HttpResponse(
-            body='{"message": "Invalid request body. Ensure you provide a JSON with a \\"cpf\\" field."}',
+            body=json.dumps(error_message),
             status_code=400,
             mimetype="application/json"
         )

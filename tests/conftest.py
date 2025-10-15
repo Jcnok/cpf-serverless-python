@@ -2,6 +2,7 @@ import json
 import azure.functions as func
 import pytest
 
+
 @pytest.fixture
 def create_mock_request():
     """Factory to create a mock HttpRequest for testing."""
