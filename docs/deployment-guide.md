@@ -128,11 +128,98 @@ jobs:
 
 ***
 
+Aqui está o modelo atualizado para seu `docs/deployment-guide.md`, já incluindo toda a explicação sobre o parâmetro `WEBSITE_RUN_FROM_PACKAGE` — pronto para copiar e colar:
+
+***
+
+# Guia de Deploy Automatizado
+
+Este documento explica, em detalhes, o processo de deploy CI/CD deste microsserviço serverless para validação de CPF na Azure Functions, incluindo autenticação via Service Principal e o tratamento do parâmetro `WEBSITE_RUN_FROM_PACKAGE`.
+
+***
+
+## Visão Geral do Pipeline
+
+O deploy é realizado via workflow no GitHub Actions, responsável por executar os testes automatizados (usando Poetry) e, em seguida, publicar na Azure Functions usando o arquivo `requirements.txt`, somente quando os testes passam.
+
+- **Autenticação:** Service Principal configurado como `AZURE_CREDENTIALS`
+- **Deploy:** Action oficial do Azure Functions, utiliza `requirements.txt` para instalar dependências
+
+***
+
+## Funcionamento do Workflow
+
+### 1. Teste
+
+- Instala dependências com Poetry (`poetry install --no-root`)
+- Roda testes (`poetry run pytest ...`)
+
+### 2. Deploy
+
+- Faz login na Azure via Service Principal
+- Realiza o deploy da aplicação com `requirements.txt` pelo action oficial
+
+Exemplo resumido do workflow:
+
+```yaml
+jobs:
+  test:
+    ...
+    - run: poetry install --no-root
+    - run: poetry run pytest --cov=src --cov-fail-under=90
+  deploy:
+    ...
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - uses: Azure/functions-action@v1
+      with:
+        app-name: 'cpf-function-seunome2025'
+        package: '.'
+```
+
+***
+
+## Atenção sobre `WEBSITE_RUN_FROM_PACKAGE`
+
+Durante o deploy via GitHub Actions/Azure CLI, o parâmetro `WEBSITE_RUN_FROM_PACKAGE` é ativado por padrão.
+
+**O que significa:**
+
+- O app roda diretamente de um pacote ZIP — sistema de arquivos em **modo somente leitura**.
+- Não é possível editar código ou arquivos pelo portal Azure.
+
+**Implicações:**
+
+- Todas as atualizações devem ser feitas via novo deploy.
+- Garante integridade e segurança (sem risco de alterações pós-deploy).
+- Fica fácil realizar rollback e controle de versão.
+
+**Edição rápido via portal:**
+
+- Se for necessário editar arquivos pelo portal Azure (ex: hotfix ou teste pontual), remova temporariamente o parâmetro `WEBSITE_RUN_FROM_PACKAGE`:
+  - No portal Azure:  
+    - Acesse Function App > Configuração > Configurações do aplicativo.
+    - Localize `WEBSITE_RUN_FROM_PACKAGE` e remova.
+    - Salve as alterações.
+  - Ou via CLI:
+    ```bash
+    az functionapp config appsettings delete \
+      --name cpf-function-seunome2025 \
+      --resource-group meu-resource-group \
+      --setting-names WEBSITE_RUN_FROM_PACKAGE
+    ```
+- **Atenção:** Ao publicar novamente via CI/CD/pipeline, o parâmetro será restaurado e a Function voltará ao modo somente leitura.
+
+***
+
 ## Checklist de Deploy
 
-- [x] **Testes passam com Poetry**
-- [x] **requirements.txt atualizado**
-- [x] **Secret AZURE_CREDENTIALS configurado no GitHub**
-- [x] **app-name no workflow preenchido corretamente**
-- [x] **Configurações sensíveis (Key/API Secrets) só no portal Azure**
+- [x] Testes passam com Poetry
+- [x] requirements.txt atualizado na raiz
+- [x] Secret AZURE_CREDENTIALS configurado
+- [x] Nome correto do app no workflow
+- [x] Variáveis sensíveis só configuradas via portal Azure
+- [x] Entendimento do modo de leitura do pacote (`WEBSITE_RUN_FROM_PACKAGE`)
 
+***

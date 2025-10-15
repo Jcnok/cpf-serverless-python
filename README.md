@@ -175,6 +175,16 @@ Ou configure via portal Azure > "Configurações" > "CORS" adicionando o domíni
   ```
   no corpo da requisição.
 
+  ### Atenção sobre modo somente leitura (`WEBSITE_RUN_FROM_PACKAGE`)
+
+Após deploy via CI/CD (GitHub Actions, Azure CLI) o Azure Functions ativa o parâmetro `WEBSITE_RUN_FROM_PACKAGE`, e o aplicativo roda diretamente de um pacote ZIP — ficando em **modo somente leitura**.
+
+- **Não é possível editar arquivos pelo portal Azure após o deploy.**
+- Qualquer alteração ou atualização deve ser feita via novo deploy/pipeline.
+- Para edições urgentes/hotfix locais, remova temporariamente esse parâmetro nas Configurações do aplicativo, entendendo que ele será restaurado no próximo publish.
+
+> Para produção: mantenha esse parâmetro ativado!
+
 ***
 
 ## ✅ Todo
