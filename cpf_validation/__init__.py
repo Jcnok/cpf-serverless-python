@@ -61,9 +61,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             'Ensure you provide a JSON with a "cpf" field.'
         }
         return func.HttpResponse(
-            body=json.dumps(error_message),
-            status_code=400,
-            mimetype="application/json",
+            body=json.dumps(error_message), status_code=400, mimetype="application/json"
         )
     except ValueError:
         # get_json() fails
