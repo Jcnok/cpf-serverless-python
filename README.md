@@ -1,5 +1,7 @@
 # Microsserviço Serverless para Validação de CPF – Azure Functions (Python)
 
+[![CI/CD Status](https://github.com/Jcnok/cpf-serverless-python/actions/workflows/deploy.yml/badge.svg)](https://github.com/Jcnok/cpf-serverless-python/actions/workflows/deploy.yml)
+
 Microsserviço serverless para validação de CPF via Azure Functions (Python). Com estrutura moderna, dependências por Poetry ou requirements.txt, testes automatizados, CI/CD e deploy fácil no Azure.
 
 ***
@@ -192,6 +194,14 @@ Após deploy via CI/CD (GitHub Actions, Azure CLI) o Azure Functions ativa o par
 - Validar acesso via function key e via portal Azure.
 - Atualizar sempre o README.md conforme ajustes.
 - Automatizar testes após deploy na CI/CD.
+
+***
+
+***
+
+## 📜 Licença
+
+Este projeto está licenciado sob a Licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ***
 

@@ -20,6 +20,10 @@ jobs:
         run: curl -sSL https://install.python-poetry.org | python3 -
       - name: Instalar dependências (Poetry)
         run: poetry install --no-interaction --no-root
+      - name: Checar formatação com Black
+        run: poetry run black --check .
+      - name: Checar linting com Flake8
+        run: poetry run flake8 .
       - name: Rodar testes
         run: poetry run pytest --cov=src --cov-fail-under=90
 
