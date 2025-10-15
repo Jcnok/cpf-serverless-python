@@ -7,6 +7,7 @@ class JsonFormatter(logging.Formatter):
     """
     Custom formatter to output logs in JSON format.
     """
+
     def format(self, record):
         log_record = {
             "timestamp": self.formatTime(record, self.datefmt),
