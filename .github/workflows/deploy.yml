@@ -1,4 +1,4 @@
-name: CI/CD Azure Functions com Poetry
+name: CI/CD Azure Functions Python
 
 on:
   push:
@@ -12,26 +12,16 @@ jobs:
     steps:
       - name: Checkout código
         uses: actions/checkout@v3
-
       - name: Instalar Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.12'
-
       - name: Instalar Poetry
         run: curl -sSL https://install.python-poetry.org | python3 -
-
-      - name: Instalar dependências
+      - name: Instalar dependências (Poetry)
         run: poetry install --no-interaction --no-root
-
-      - name: Rodar testes unitários e cobertura
-        run: poetry run pytest --cov=src --cov-report=xml --cov-fail-under=90
-
-      - name: Publicar relatório de cobertura (opcional)
-        uses: codecov/codecov-action@v3
-        with:
-          files: ./coverage.xml
-          fail_ci_if_error: false
+      - name: Rodar testes
+        run: poetry run pytest --cov=src --cov-fail-under=90
 
   deploy:
     if: github.ref == 'refs/heads/master'
@@ -40,19 +30,12 @@ jobs:
     steps:
       - name: Checkout código
         uses: actions/checkout@v3
-
       - name: Login Azure
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Deploy para Azure Functions (usando requirements.txt)
-        uses: Azure/functions-action@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
       - name: Deploy para Azure Functions
         uses: Azure/functions-action@v1
         with:
-          app-name: 'cpf-function' # Ajuste conforme seu Function App!
+          app-name: 'cpf-function' # Preencha aqui com o nome EXATO do recurso Azure Functions!
           package: '.'
