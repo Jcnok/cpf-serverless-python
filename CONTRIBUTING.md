@@ -1,162 +1,143 @@
+Aqui está o modelo revisado e ajustado para o arquivo `CONTRIBUTING.md`, atualizado conforme as práticas do seu projeto e as mudanças recentes:
+
+***
+
 # Guia de Contribuição – cpf-serverless-python
 
-Bem-vindo! Este documento orienta sobre como configurar o ambiente, adotar convenções e contribuir com qualidade para este projeto.
+Bem-vindo! Este documento orienta como configurar o ambiente local, seguir convenções e contribuir com qualidade para este microsserviço serverless para validação de CPF em Azure Functions.
 
----
+***
 
 ## 🛠️ Setup do Ambiente
 
 ### Pré-requisitos
 
-Antes de iniciar o desenvolvimento, certifique-se de ter as seguintes ferramentas instaladas:
+Antes de iniciar o desenvolvimento, garanta que estas ferramentas estejam instaladas:
 
-- **Python 3.8+** (preferencialmente gerenciado com `pyenv`)
+- **Python 3.12**
 - **Poetry** (gerenciamento de dependências)
-- **Azure CLI** (para deploy e gerenciamento de recursos Azure)
-- **Azure Functions Core Tools** (para execução local de Azure Functions)
+- **Azure CLI** (para deploy e gerenciamento no Azure)
+- **Azure Functions Core Tools** (execução local de Functions)
+- Opcional: **pyenv** (para gerenciar múltiplas versões Python)
 
-> 📘 **Importante:** Para instalação completa das ferramentas Azure (Azure CLI e Azure Functions Core Tools), incluindo configuração de autenticação, subscription e permissões, consulte a seção **[🔧 Setup das Ferramentas Azure para Desenvolvimento e Deploy (WSL2/Ubuntu)](README.md#-setup-das-ferramentas-azure-para-desenvolvimento-e-deploy-wsl2ubuntu)** no README.md.
+Para instruções detalhadas de instalação e setup, consulte o README do projeto.
 
-### Instalação das Dependências do Projeto
+***
 
-- **Instale as dependências:**
-  ```bash
-  poetry install --no-root
-  ```
+### Instalação das Dependências
 
-- **Ative o ambiente virtual Poetry:**
-  ```bash
-  poetry shell
-  ```
+```bash
+poetry install --no-root
+poetry shell
+python --version
+```
 
-- **Verifique a versão do Python:**
-  ```bash
-  python --version
-  ```
+***
 
 ### Validação do Ambiente Azure
 
-Após configurar as ferramentas Azure (conforme guia no README.md), valide a instalação:
+Após configurar as ferramentas Azure, valide a instalação:
 
 ```bash
-# Verificar Azure CLI
 az --version
-
-# Verificar Azure Functions Core Tools
 func --version
-
-# Verificar autenticação
 az account show
 ```
----
 
-### Estrutura de Funções Azure
+***
 
-- Todas as Azure Functions devem ser criadas e organizadas em subpastas dentro de `src/functions/<nome_da_funcao>`.
-- Siga sempre os padrões de nomeação e estrutura do projeto principal descritos no README.md.
+### Estrutura do Projeto
 
----
+- Suas funções devem estar organizadas na pasta `cpf_validation/` na raiz do projeto.
+- Siga os padrões descritos no README e mantenha clareza na estrutura, nomenclatura e separação de módulos.
 
-## ⚙️ Ferramentas e Dependências
+***
 
-- **Dependências base:**
-  - `azure-functions`
-  - `azure-functions-worker`
-  - `pydantic`
-  - `cpf-cnpj-validator`
+## ⚙️ Dependências e Ferramentas
 
-- **Dependências de desenvolvimento:**
-  - `pytest` (testes)
-  - `black` (formatação de código)
-  - `flake8` (linter)
-  - `mypy` (type checking)
-  - `pytest-cov` (cobertura de testes)
+- Principais: `azure-functions`, `pydantic`, `pycpfcnpj`
+- Dev: `pytest`, `pytest-cov`, `black`, `flake8`, `mypy`
 
----
+As dependências de produção devem estar sempre no `requirements.txt` (atualizado via poetry export quando necessário).  
+As dependências de desenvolvimento vão no `pyproject.toml`.
 
-## 📝 Checks de Qualidade
+***
 
-Execute antes de abrir PR:
+## 📝 Checks de Qualidade (antes do PR)
 
-- **Testes:**
+Execute antes de abrir Pull Request:
+
+- Testes unitários
   ```bash
   poetry run pytest
   ```
-
-- **Formatação Black:**
+- Formatação Black
   ```bash
   poetry run black --check .
   ```
-
-- **Lint:**
+- Lint Flake8
   ```bash
   poetry run flake8 .
   ```
-
-- **Type Check:**
+- Type Check Mypy
   ```bash
   poetry run mypy .
   ```
 
-### Executar Todos os Checks de Uma Vez
-
+Para rodar todos de uma vez (exemplo):
 ```bash
-# Script sugerido para executar todos os checks
-poetry run black --check . && \
-poetry run flake8 . && \
-poetry run mypy . && \
-poetry run pytest
+poetry run black --check . && poetry run flake8 . && poetry run mypy . && poetry run pytest
 ```
 
----
-
-## 🧙 Observações Importantes
-
-- O projeto possui `.flake8` configurado para ignorar pastas ocultas/ambiente virtual.
-- Use sempre `poetry install --no-root` caso não deseje instalar o projeto como pacote Python.
-- Mantenha o código na pasta principal do projeto (ex: `src/` ou `cpf_serverless_python/`, conforme padrão).
-- **Para contribuidores em WSL2/Ubuntu:** Consulte a seção de troubleshooting no README.md caso encontre problemas com Azure CLI ou Azure Functions Core Tools.
-
----
+***
 
 ## 🚀 Fluxo para Pull Requests
 
-1. Crie uma branch referente à issue (ex: `hotfix/22-complementa-dependencias`)
-2. Faça commits claros e objetivos (ex: `"feat: validação de CPF"`)
-3. Execute todos os checks de qualidade antes de abrir o PR
-4. Relacione o PR à Issue correspondente e documente comandos/evidências no PR
-5. Aguarde a revisão e responda aos comentários, se houver
+1. Crie uma branch específica da issue (ex: `feat/validacao-cpf`)
+2. Faça commits claros e siga convenções de mensagem (vide abaixo)
+3. Execute todos os checks de qualidade antes do PR
+4. Relacione o PR à Issue correspondente, explique as alterações, adicione evidências/prints se relevante
+5. Aguarde revisão e responda feedbacks
 
-### Convenções de Commit
+### Convenção de Commits
 
-Utilize o formato [Conventional Commits](https://www.conventionalcommits.org/):
+Utilize [Conventional Commits](https://www.conventionalcommits.org/) para clareza:
 
-- `feat:` - Nova funcionalidade
-- `fix:` - Correção de bug
-- `docs:` - Alterações na documentação
-- `test:` - Adição ou modificação de testes
-- `refactor:` - Refatoração de código
-- `chore:` - Tarefas de manutenção
-- `ci:` - Alterações em CI/CD
+- `feat:` Nova funcionalidade
+- `fix:` Correção de bug
+- `docs:` Alteração na documentação
+- `test:` Novos testes
+- `refactor:` Refatoração
+- `ci:` Mudanças no CI/CD
+- `chore:` Tarefas de manutenção
 
----
+***
 
-## 📚 Recursos para Contribuidores
+## 🧙 Observações Importantes
+
+- Faça sempre os testes automatizados; o workflow do GitHub Actions irá impedir deploy caso algo falhe.
+- Use sempre `poetry install --no-root` para instalar dependências (não empacotar).
+- O deploy é feito automaticamente via CI/CD (usando `requirements.txt`), basta manter o arquivo atualizado.
+- Segredos ou variáveis sensíveis devem ser configurados **exclusivamente no portal Azure**, nunca no código ou no repositório.
+
+***
+
+## 📚 Recursos Úteis
 
 - [Documentação do Azure Functions (Python)](https://docs.microsoft.com/azure/azure-functions/functions-reference-python)
-- [Poetry Documentation](https://python-poetry.org/docs/)
+- [Poetry Docs](https://python-poetry.org/docs/)
 - [Conventional Commits](https://www.conventionalcommits.org/)
-- [Black Code Style](https://black.readthedocs.io/)
-- [Flake8 Documentation](https://flake8.pycqa.org/)
+- [Black](https://black.readthedocs.io/)
+- [Flake8](https://flake8.pycqa.org/)
+- [pytest](https://docs.pytest.org/en/stable/)
+- [pycpfcnpj](https://pypi.org/project/pycpfcnpj/)
 
----
+***
 
 ## 💡 Dúvidas ou Sugestões?
 
-Contribua ou peça mentoria!
-  
-Contate o responsável pelo repositório ou abra uma discussão na aba "Issues".
+Abra uma *Issue*, um *Pull Request* ou discuta na aba Discussions.
 
----
+**Contribua! Bom código e bons PRs!**
 
-**Bons commits e bons PRs!**
+[1](https://github.com/Jcnok/cpf-serverless-python)

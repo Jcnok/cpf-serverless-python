@@ -1,64 +1,138 @@
 # Guia de Deploy Automatizado
 
-Este documento descreve o processo de deploy automatizado (CI/CD) para a aplicação de validação de CPF no Azure Functions.
+Este documento explica o processo de **deploy CI/CD** da aplicação de validação de CPF para Azure Functions, usando autenticação profissional via Service Principal (`secrets.AZURE_CREDENTIALS`) e GitHub Actions.
 
-## Visão Geral
+***
 
-O processo de deploy é gerenciado pelo GitHub Actions. Um workflow foi configurado para automatizar a verificação, o teste e a publicação da aplicação sempre que novas alterações forem enviadas para a branch `main`.
+## Visão Geral do Pipeline
 
-O pipeline está definido no arquivo `.github/workflows/deploy.yml`.
+O deploy é realizado automaticamente por um **workflow do GitHub Actions** definido em `.github/workflows/deploy.yml`.  
+A pipeline executa testes automatizados (com Poetry) e publica a aplicação na Azure Functions usando o `requirements.txt`, **apenas se todos os testes passarem**.
 
-## Funcionamento do Pipeline
+***
 
-O pipeline é acionado automaticamente em qualquer `push` para a branch `main`. Ele consiste em dois jobs sequenciais:
+## Funcionamento do Workflow
 
-### 1. `build-and-test`
+- **Testes:** Executados com Poetry antes de qualquer deploy.
+- **Deploy:** Usando o Action oficial do Azure, autenticado via Service Principal configurado em `AZURE_CREDENTIALS`.
 
-Este job é responsável por garantir a qualidade e a integridade do código antes do deploy. Ele executa os seguintes passos:
-- **Checkout do Código**: Baixa a versão mais recente do código do repositório.
-- **Configuração do Ambiente**: Instala e configura a versão correta do Python (3.12.11).
-- **Instalação de Dependências**: Utiliza o Poetry para instalar todas as dependências do projeto.
-- **Execução dos Testes**: Roda a suíte completa de testes automatizados com `pytest`.
+### Resumo das Etapas
 
-Se qualquer um desses passos falhar, o pipeline é interrompido, e o deploy não é realizado, prevenindo que código com problemas chegue ao ambiente de produção.
+1. **`test`**
+   - Instala dependências com Poetry
+   - Roda toda a suíte de testes
 
-### 2. `deploy`
+2. **`deploy`**
+   - Autentica via Azure Service Principal (`secrets.AZURE_CREDENTIALS`)
+   - Publica o conteúdo do projeto para o Azure Functions usando `requirements.txt`
 
-Este job só é executado se o job `build-and-test` for concluído com sucesso. Ele é responsável por publicar a aplicação no Azure.
-- **Checkout do Código**: Baixa novamente o código para garantir um ambiente limpo.
-- **Deploy no Azure Functions**: Utiliza a action `Azure/functions-action@v1` para enviar o pacote da aplicação para o Azure.
+***
 
-## Configuração Necessária
+## Autenticação: Gerando o Service Principal e Configurando o Secret
 
-Para que o deploy funcione, é necessário configurar um secret no repositório do GitHub.
+### 1. Criar Service Principal no Azure
 
-### 1. Obter o Publish Profile do Azure
+Execute no terminal:
+```bash
+az ad sp create-for-rbac --name "github-actions-deploy-cpf-func" --role contributor \
+  --scopes /subscriptions/<SUBSCRIPTION_ID>/resourceGroups/<RESOURCE_GROUP>/providers/Microsoft.Web/sites/<FUNCTION_APP_NAME> \
+  --sdk-auth
+```
+**Substitua:**
+- `<SUBSCRIPTION_ID>` pelo ID da sua assinatura Azure
+- `<RESOURCE_GROUP>` pelo grupo de recursos
+- `<FUNCTION_APP_NAME>` pelo nome da sua Function App
 
-O "Publish Profile" é um arquivo XML que contém as credenciais de deploy para a sua Function App.
+O comando irá gerar um JSON `AZURE_CREDENTIALS` similar a:
+```json
+{
+  "clientId": "...",
+  "clientSecret": "...",
+  "subscriptionId": "...",
+  "tenantId": "...",
+  "activeDirectoryEndpointUrl": "...",
+  "resourceManagerEndpointUrl": "...",
+  "activeDirectoryGraphResourceId": "...",
+  "sqlManagementEndpointUrl": "...",
+  "galleryEndpointUrl": "...",
+  "managementEndpointUrl": "..."
+}
+```
 
-1.  Acesse o [Portal da Azure](https://portal.azure.com/).
-2.  Navegue até a sua **Function App**.
-3.  No menu lateral, encontre a seção "Publicar" e clique em **Baixar perfil de publicação**.
-4.  Isso fará o download de um arquivo com a extensão `.publishsettings`. Abra este arquivo em um editor de texto.
+### 2. Adicionar o Secret no GitHub
 
-### 2. Configurar o Secret no GitHub
+1. No repositório, acesse **Settings > Secrets and variables > Actions**
+2. Clique em **New repository secret**
+3. Nomeie como `AZURE_CREDENTIALS`
+4. Cole o JSON gerado no campo de valor
+5. Salve
 
-O conteúdo completo do arquivo `.publishsettings` deve ser adicionado como um secret no seu repositório GitHub.
+***
 
-1.  No seu repositório no GitHub, vá para **Settings** > **Secrets and variables** > **Actions**.
-2.  Clique em **New repository secret**.
-3.  No campo **Name**, insira `AZURE_FUNCTIONAPP_PUBLISH_PROFILE`.
-4.  No campo **Secret**, cole o conteúdo completo do arquivo `.publishsettings` que você baixou.
-5.  Clique em **Add secret**.
+## Configuração do Workflow (`.github/workflows/deploy.yml`)
 
-### 3. Substituir o Nome da Aplicação no Workflow
+Exemplo de workflow enxuto para seu cenário:
 
-No arquivo `.github/workflows/deploy.yml`, você precisa substituir o placeholder `<YOUR_FUNCTION_APP_NAME>` pelo nome real da sua Function App no Azure.
+```yaml
+name: CI/CD Azure Functions (Poetry + requirements.txt)
 
-## Variáveis de Ambiente
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
-Qualquer variável de ambiente necessária para a aplicação em produção (como chaves de API, strings de conexão, etc.) **não** deve ser armazenada no código. Em vez disso, elas devem ser configuradas diretamente no Azure:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+      - name: Instalar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      - name: Instalar Poetry
+        run: curl -sSL https://install.python-poetry.org | python3 -
+      - name: Instalar dependências
+        run: poetry install --no-interaction --no-root
+      - name: Rodar testes
+        run: poetry run pytest --cov=src --cov-fail-under=90
 
-1.  No Portal da Azure, acesse sua **Function App**.
-2.  No menu lateral, vá para **Configuração** > **Configurações do aplicativo**.
-3.  Adicione as variáveis de ambiente como "Novas configurações de aplicativo".
+  deploy:
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+      - name: Login Azure (Service Principal)
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Deploy para Azure Functions
+        uses: Azure/functions-action@v1
+        with:
+          app-name: 'cpf-function-seunome2025' # Nome exato da sua Function App!
+          package: '.'
+```
+
+***
+
+## Observações Importantes
+
+- O build remoto do Azure Functions **usa o requirements.txt** para instalar todas as dependências.
+- Mantenha o requirements.txt sempre atualizado (gere via Poetry se o projeto evoluir).
+- Secrets nunca devem ser versionados ou expostos no repositório!
+- O Service Principal deve ter permissão mínima necessária (usando escopo do resource group ou especificamente da Function App).
+
+***
+
+## Checklist de Deploy
+
+- [x] **Testes passam com Poetry**
+- [x] **requirements.txt atualizado**
+- [x] **Secret AZURE_CREDENTIALS configurado no GitHub**
+- [x] **app-name no workflow preenchido corretamente**
+- [x] **Configurações sensíveis (Key/API Secrets) só no portal Azure**
+

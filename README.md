@@ -95,7 +95,9 @@ curl -X POST http://localhost:7071/api/validate-cpf \
 2. **Crie recursos**
    ```bash
    az group create --name meu-grupo-cpf --location brazilsouth
+
    az storage account create --name cpfstorageSEUNOME2025 --location brazilsouth --resource-group meu-grupo-cpf --sku Standard_LRS
+   
    az functionapp create --resource-group meu-grupo-cpf --consumption-plan-location brazilsouth --name cpf-function-seunome2025 --storage-account cpfstorageSEUNOME2025 --runtime python --runtime-version 3.12 --functions-version 4 --os-type Linux
    ```
 
