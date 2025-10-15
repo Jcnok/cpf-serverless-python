@@ -1,14 +1,17 @@
-import pytest
 import json
-from cpf_validation import main  # Ajuste se precisar para src.functions.cpf_validation
+import urllib
+
+import pytest
+from azure.functions import HttpRequest
+
+from cpf_validation import main
 
 
 @pytest.fixture
 def create_mock_request():
-    from azure.functions import HttpRequest
-    import urllib
-
-    def _make_request(method="POST", url="/api/validate-cpf", body=None, headers=None):
+    def _make_request(
+        method="POST", url="/api/validate-cpf", body=None, headers=None
+    ):
         headers = headers or {"Content-Type": "application/json"}
         if body is not None and isinstance(body, dict):
             body = json.dumps(body)
@@ -58,9 +61,7 @@ def test_invalid_json_returns_400(create_mock_request):
 
 
 def test_rate_limited_returns_429(monkeypatch, create_mock_request):
-    monkeypatch.setattr(
-        "cpf_validation.is_rate_limited", lambda ip: True
-    )  # Ajuste path conforme layout real!
+    monkeypatch.setattr("cpf_validation.is_rate_limited", lambda ip: True)
     body = {"cpf": "11144477735"}
     req = create_mock_request(body=body)
     resp = main(req)
@@ -70,10 +71,10 @@ def test_rate_limited_returns_429(monkeypatch, create_mock_request):
 
 
 def test_unexpected_exception(monkeypatch, create_mock_request):
-    monkeypatch.setattr(
-        "cpf_validation.CPFRequest",
-        lambda *a, **kw: (_ for _ in ()).throw(Exception("fail")),
-    )
+    def mock_exception(*args, **kwargs):
+        raise Exception("fail")
+
+    monkeypatch.setattr("cpf_validation.CPFRequest", mock_exception)
     body = {"cpf": "11144477735"}
     req = create_mock_request(body=body)
     resp = main(req)

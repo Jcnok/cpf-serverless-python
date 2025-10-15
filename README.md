@@ -8,35 +8,31 @@ Microsserviço serverless para validação de CPF via Azure Functions (Python). 
 
 ## 🚀 Visão Geral
 
-- Python 3.12
-- Gerenciamento de dependências via Poetry ou requirements.txt
-- Estrutura modular e escalável
-- Testes com pytest e integração contínua
-- Deploy rápido para Azure Functions
+Este projeto oferece um microsserviço serverless robusto e escalável para a validação de CPFs brasileiros, construído com Python 3.12 e implantado no ambiente do Azure Functions. Ele foi projetado com foco em boas práticas de engenharia de software, incluindo uma arquitetura modular, gerenciamento de dependências com Poetry, e um pipeline de CI/CD totalmente automatizado com GitHub Actions, que garante a qualidade e a integridade do código a cada alteração.
+
+## ✨ Funcionalidades
+
+- **Validação de CPF**: O endpoint principal valida CPFs com e sem formatação, utilizando a biblioteca `pycpfcnpj` para garantir a precisão.
+- **Rate Limiting**: Um limitador de requisições baseado em IP previne abusos, garantindo a disponibilidade do serviço (10 requisições por minuto).
+- **Tratamento de Erros Estruturado**: Respostas de erro claras e consistentes para requisições malformadas, CPFs inválidos e outros cenários de falha.
+- **CI/CD Automatizado**: O pipeline de integração contínua executa testes, verifica a formatação do código e faz o deploy automaticamente para o Azure a cada push na branch `main`.
+- **Cobertura de Testes**: O projeto mantém uma cobertura de testes de 100%, assegurando a confiabilidade da lógica de negócios.
 
 ***
 
 ## 🗂️ Estrutura do Projeto
 
-```
-cpf-serverless-python/
-├── host.json
-├── requirements.txt
-├── cpf_validation/
-│   ├── __init__.py
-│   └── function.json
-├── src/
-│   └── core/
-│        ├── models/
-│        └── utils/
-├── tests/
-│   ├── unit/
-│   └── integration/
-├── .github/
-│   └── workflows/
-├── .funcignore
-├── README.md
-```
+| Arquivo/Diretório | Descrição |
+|---|---|
+| `cpf_validation/` | Contém o código-fonte da Azure Function. O `__init__.py` é o ponto de entrada da função, e o `function.json` define seus gatilhos e bindings. |
+| `src/core/` | Abriga a lógica de negócios e os componentes compartilhados da aplicação. |
+| `src/core/models/` | Modelos de dados Pydantic (`http_models.py`) que garantem a validação e a consistência das requisições e respostas. |
+| `src/core/utils/` | Módulos utilitários, como o logger (`logger.py`) e o limitador de requisições (`rate_limiter.py`). |
+| `tests/` | Contém os testes automatizados. Os testes unitários ficam em `tests/unit`. |
+| `.github/workflows/` | Arquivos de workflow do GitHub Actions para o pipeline de CI/CD. |
+| `pyproject.toml` | Arquivo de configuração do Poetry, que gerencia as dependências do projeto e as configurações de ferramentas como o `pytest`. |
+| `host.json` | Arquivo de configuração do host do Azure Functions, onde são definidas configurações globais como `logging` e `functionTimeout`. |
+| `requirements.txt` | Lista de dependências de produção, gerada a partir do `poetry.lock`, utilizada pelo Azure Functions durante o deploy. |
 
 ***
 
