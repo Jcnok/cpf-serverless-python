@@ -41,19 +41,13 @@ jobs:
       - name: Checkout código
         uses: actions/checkout@v3
 
-      - name: Instalar Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.12'
-
-      - name: Instalar Poetry
-        run: curl -sSL https://install.python-poetry.org | python3 -
-
-      - name: Instalar dependências
-        run: poetry install --no-interaction --no-root
-
       - name: Login Azure
         uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy para Azure Functions (usando requirements.txt)
+        uses: Azure/functions-action@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
