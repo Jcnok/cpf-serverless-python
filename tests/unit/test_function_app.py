@@ -1,12 +1,11 @@
 import pytest
 import json
-from src.functions.cpf_validation import main
+from cpf_validation import main   # Ajuste se precisar para src.functions.cpf_validation
 
 @pytest.fixture
 def create_mock_request():
     from azure.functions import HttpRequest
     import urllib
-
     def _make_request(method="POST", url="/api/validate-cpf", body=None, headers=None):
         headers = headers or {"Content-Type": "application/json"}
         if body is not None and isinstance(body, dict):
@@ -49,7 +48,7 @@ def test_invalid_json_returns_400(create_mock_request):
     assert resp.status_code == 400
 
 def test_rate_limited_returns_429(monkeypatch, create_mock_request):
-    monkeypatch.setattr("src.functions.cpf_validation.is_rate_limited", lambda ip: True)
+    monkeypatch.setattr("cpf_validation.is_rate_limited", lambda ip: True)  # Ajuste path conforme layout real!
     body = {"cpf": "11144477735"}
     req = create_mock_request(body=body)
     resp = main(req)
@@ -58,8 +57,7 @@ def test_rate_limited_returns_429(monkeypatch, create_mock_request):
     assert "Too many requests" in data["message"]
 
 def test_unexpected_exception(monkeypatch, create_mock_request):
-    # força um erro interno no CPFRequest (ex: quebra proposital)
-    monkeypatch.setattr("src.functions.cpf_validation.CPFRequest", lambda *a, **kw: (_ for _ in ()).throw(Exception("fail")))
+    monkeypatch.setattr("cpf_validation.CPFRequest", lambda *a, **kw: (_ for _ in ()).throw(Exception("fail")))
     body = {"cpf": "11144477735"}
     req = create_mock_request(body=body)
     resp = main(req)
