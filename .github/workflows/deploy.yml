@@ -50,7 +50,7 @@ jobs:
         run: curl -sSL https://install.python-poetry.org | python3 -
 
       - name: Instalar dependências
-        run: poetry install --no-interaction
+        run: poetry install --no-interaction --no-root
 
       - name: Login Azure
         uses: azure/login@v1
