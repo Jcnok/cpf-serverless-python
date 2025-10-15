@@ -11,20 +11,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
       - name: Set up Python version
         uses: actions/setup-python@v4
         with:
           python-version: '3.12.11'
-
       - name: Install Poetry
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
-
       - name: Install dependencies
         run: |
           poetry install --no-root
-
       - name: Run tests
         run: |
           poetry run pytest
@@ -35,21 +31,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
       - name: 'Create deployment package'
         run: |
           mkdir dist
           cp host.json requirements.txt dist/
-          cp -r src/core dist/
-          cp src/functions/cpf_validation/function_app.py dist/function_app.py
-          # Fix imports for the new structure
-          sed -i 's/from src.core/from core/g' dist/function_app.py
-
+          cp -r src/core dist/core
+          mkdir -p dist/cpf_validation
+          cp src/functions/cpf_validation/__init__.py dist/cpf_validation/__init__.py
+          cp src/functions/cpf_validation/function.json dist/cpf_validation/function.json
       - name: 'Azure Login'
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-
       - name: 'Deploy to Azure Functions'
         uses: Azure/functions-action@v1
         with:
