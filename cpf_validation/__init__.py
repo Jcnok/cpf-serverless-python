@@ -1,6 +1,7 @@
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../")))
 
 import azure.functions as func
 import pydantic
@@ -11,6 +12,7 @@ from src.core.utils.logger import get_logger
 from src.core.utils.rate_limiter import is_rate_limited
 
 logger = get_logger(__name__)
+
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     # Rate limiting check
@@ -23,7 +25,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         return func.HttpResponse(
             body='{"message": "Too many requests. Please try again later."}',
             status_code=429,
-            mimetype="application/json"
+            mimetype="application/json",
         )
 
     logger.info(f"CPF validation request received from IP: {client_ip}")
@@ -36,23 +38,19 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         is_valid = cpfcnpj.validate(cpf_data.cpf)
         if is_valid:
             response_model = CPFResponse(
-                cpf=cpf_data.cpf,
-                is_valid=True,
-                message="The provided CPF is valid."
+                cpf=cpf_data.cpf, is_valid=True, message="The provided CPF is valid."
             )
             status_code = 200
         else:
             response_model = CPFResponse(
-                cpf=cpf_data.cpf,
-                is_valid=False,
-                message="The provided CPF is invalid."
+                cpf=cpf_data.cpf, is_valid=False, message="The provided CPF is invalid."
             )
             status_code = 400
 
         return func.HttpResponse(
             response_model.model_dump_json(),
             status_code=status_code,
-            mimetype="application/json"
+            mimetype="application/json",
         )
 
     except pydantic.ValidationError as e:
@@ -60,7 +58,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         return func.HttpResponse(
             body='{"message": "Invalid request body. Ensure you provide a JSON with a \\"cpf\\" field."}',
             status_code=400,
-            mimetype="application/json"
+            mimetype="application/json",
         )
     except ValueError:
         # get_json() fails
@@ -68,12 +66,12 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         return func.HttpResponse(
             body='{"message": "Invalid JSON format in request body."}',
             status_code=400,
-            mimetype="application/json"
+            mimetype="application/json",
         )
     except Exception as e:
         logger.exception(f"An unexpected error occurred: {e}")
         return func.HttpResponse(
             body='{"message": "An internal server error occurred."}',
             status_code=500,
-            mimetype="application/json"
+            mimetype="application/json",
         )

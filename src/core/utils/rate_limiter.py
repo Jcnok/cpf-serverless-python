@@ -7,6 +7,7 @@ request_counts: Dict[str, Dict[str, float]] = {}
 RATE_LIMIT_COUNT = 10  # Max requests
 RATE_LIMIT_WINDOW = 60  # Seconds
 
+
 def is_rate_limited(ip_address: str) -> bool:
     """
     Checks if an IP address has exceeded the rate limit.
@@ -14,10 +15,7 @@ def is_rate_limited(ip_address: str) -> bool:
     current_time = time.time()
 
     if ip_address not in request_counts:
-        request_counts[ip_address] = {
-            "count": 1,
-            "window_start": current_time
-        }
+        request_counts[ip_address] = {"count": 1, "window_start": current_time}
         return False
 
     ip_data = request_counts[ip_address]
