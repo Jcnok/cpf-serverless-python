@@ -1,143 +1,74 @@
-Aqui está o modelo revisado e ajustado para o arquivo `CONTRIBUTING.md`, atualizado conforme as práticas do seu projeto e as mudanças recentes:
+# Guia de Contribuição
 
-***
+Ficamos muito felizes com o seu interesse em contribuir para este projeto! Para garantir um ambiente colaborativo e organizado, criamos este guia com os passos e padrões que seguimos.
 
-# Guia de Contribuição – cpf-serverless-python
+## 🚀 Começando
 
-Bem-vindo! Este documento orienta como configurar o ambiente local, seguir convenções e contribuir com qualidade para este microsserviço serverless para validação de CPF em Azure Functions.
+### 1. Configure o Ambiente de Desenvolvimento
 
-***
+Para começar, você precisará configurar seu ambiente local. Siga os passos abaixo:
 
-## 🛠️ Setup do Ambiente
+1.  **Fork e Clone o Repositório**:
+    *   Faça um **fork** deste repositório para a sua conta do GitHub.
+    *   Clone o seu fork localmente:
+        ```bash
+        git clone https://github.com/SEU-USUARIO/cpf-serverless-python.git
+        cd cpf-serverless-python
+        ```
 
-### Pré-requisitos
+2.  **Instale as Ferramentas e Dependências**:
+    *   Este projeto utiliza `pyenv` para gerenciar a versão do Python e `poetry` para as dependências. Certifique-se de que ambos estão instalados.
+    *   Instale a versão correta do Python e as dependências do projeto:
+        ```bash
+        pyenv install $(cat .python-version)
+        poetry install
+        ```
 
-Antes de iniciar o desenvolvimento, garanta que estas ferramentas estejam instaladas:
+3.  **Execute a Aplicação Localmente**:
+    *   Para iniciar o ambiente local do Azure Functions, execute:
+        ```bash
+        func start
+        ```
+    *   O endpoint estará disponível em `http://localhost:7071/api/validate-cpf`.
 
-- **Python 3.12**
-- **Poetry** (gerenciamento de dependências)
-- **Azure CLI** (para deploy e gerenciamento no Azure)
-- **Azure Functions Core Tools** (execução local de Functions)
-- Opcional: **pyenv** (para gerenciar múltiplas versões Python)
+### 2. Estratégia de Branches
 
-Para instruções detalhadas de instalação e setup, consulte o README do projeto.
+Utilizamos um padrão simples para a nomenclatura de branches, baseado no tipo de alteração que você está fazendo. Isso nos ajuda a manter o repositório organizado.
 
-***
+*   **features**: `feature/nome-da-feature` (ex: `feature/add-cnpj-validation`)
+*   **bug fixes**: `fix/descricao-do-bug` (ex: `fix/adjust-rate-limiter`)
+*   **documentação**: `docs/tema-da-documentacao` (ex: `docs/update-readme`)
+*   **outras tarefas**: `chore/descricao-da-tarefa` (ex: `chore/update-dependencies`)
 
-### Instalação das Dependências
+### 3. Fluxo de Trabalho para Contribuições
 
-```bash
-poetry install --no-root
-poetry shell
-python --version
-```
+1.  **Crie uma nova branch** a partir da `main`, seguindo a convenção de nomenclatura descrita acima.
+    ```bash
+    git checkout -b feature/sua-nova-feature
+    ```
 
-***
+2.  **Faça suas alterações** no código.
 
-### Validação do Ambiente Azure
+3.  **Valide suas alterações localmente** antes de fazer o commit. Temos um script que roda todas as verifições de uma só vez (formatação, linting e testes):
+    ```bash
+    ./scripts/run-checks.sh
+    ```
 
-Após configurar as ferramentas Azure, valide a instalação:
+4.  **Faça o commit das suas alterações**. É muito importante que suas mensagens de commit sigam a nossa **Convenção de Commits**. Veja o documento [COMMIT_CONVENTION.md](COMMIT_CONVENTION.md) para mais detalhes.
+    ```bash
+    git commit -m "feat: Adiciona nova funcionalidade X"
+    ```
 
-```bash
-az --version
-func --version
-az account show
-```
+5.  **Envie suas alterações** para o seu fork:
+    ```bash
+    git push origin feature/sua-nova-feature
+    ```
 
-***
+6.  **Abra um Pull Request (PR)** no repositório original, com a `main` como branch de destino. Preencha o template do PR com as informações solicitadas.
 
-### Estrutura do Projeto
+### 4. Revisão e Merge
 
-- Suas funções devem estar organizadas na pasta `cpf_validation/` na raiz do projeto.
-- Siga os padrões descritos no README e mantenha clareza na estrutura, nomenclatura e separação de módulos.
+*   Seu PR será revisado por um dos mantenedores do projeto. Fique atento a possíveis feedbacks ou pedidos de alteração.
+*   Após a aprovação, seu PR será integrado à branch `main` utilizando o método **"Squash and Merge"**. Isso agrupa todos os commits do seu PR em um único commit, mantendo o histórico da `main` limpo e organizado.
 
-***
-
-## ⚙️ Dependências e Ferramentas
-
-- Principais: `azure-functions`, `pydantic`, `pycpfcnpj`
-- Dev: `pytest`, `pytest-cov`, `black`, `flake8`, `mypy`
-
-As dependências de produção devem estar sempre no `requirements.txt` (atualizado via poetry export quando necessário).  
-As dependências de desenvolvimento vão no `pyproject.toml`.
-
-***
-
-## 📝 Checks de Qualidade (antes do PR)
-
-Execute antes de abrir Pull Request:
-
-- Testes unitários
-  ```bash
-  poetry run pytest
-  ```
-- Formatação Black
-  ```bash
-  poetry run black --check .
-  ```
-- Lint Flake8
-  ```bash
-  poetry run flake8 .
-  ```
-- Type Check Mypy
-  ```bash
-  poetry run mypy .
-  ```
-
-Para rodar todos de uma vez (exemplo):
-```bash
-poetry run black --check . && poetry run flake8 . && poetry run mypy . && poetry run pytest
-```
-
-***
-
-## 🚀 Fluxo para Pull Requests
-
-1. Crie uma branch específica da issue (ex: `feat/validacao-cpf`)
-2. Faça commits claros e siga convenções de mensagem (vide abaixo)
-3. Execute todos os checks de qualidade antes do PR
-4. Relacione o PR à Issue correspondente, explique as alterações, adicione evidências/prints se relevante
-5. Aguarde revisão e responda feedbacks
-
-### Convenção de Commits
-
-Utilize [Conventional Commits](https://www.conventionalcommits.org/) para clareza:
-
-- `feat:` Nova funcionalidade
-- `fix:` Correção de bug
-- `docs:` Alteração na documentação
-- `test:` Novos testes
-- `refactor:` Refatoração
-- `ci:` Mudanças no CI/CD
-- `chore:` Tarefas de manutenção
-
-***
-
-## 🧙 Observações Importantes
-
-- Faça sempre os testes automatizados; o workflow do GitHub Actions irá impedir deploy caso algo falhe.
-- Use sempre `poetry install --no-root` para instalar dependências (não empacotar).
-- O deploy é feito automaticamente via CI/CD (usando `requirements.txt`), basta manter o arquivo atualizado.
-- Segredos ou variáveis sensíveis devem ser configurados **exclusivamente no portal Azure**, nunca no código ou no repositório.
-
-***
-
-## 📚 Recursos Úteis
-
-- [Documentação do Azure Functions (Python)](https://docs.microsoft.com/azure/azure-functions/functions-reference-python)
-- [Poetry Docs](https://python-poetry.org/docs/)
-- [Conventional Commits](https://www.conventionalcommits.org/)
-- [Black](https://black.readthedocs.io/)
-- [Flake8](https://flake8.pycqa.org/)
-- [pytest](https://docs.pytest.org/en/stable/)
-- [pycpfcnpj](https://pypi.org/project/pycpfcnpj/)
-
-***
-
-## 💡 Dúvidas ou Sugestões?
-
-Abra uma *Issue*, um *Pull Request* ou discuta na aba Discussions.
-
-**Contribua! Bom código e bons PRs!**
-
-[1](https://github.com/Jcnok/cpf-serverless-python)
+Agradecemos novamente pela sua contribuição!

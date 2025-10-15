@@ -9,9 +9,7 @@ from cpf_validation import main
 
 @pytest.fixture
 def create_mock_request():
-    def _make_request(
-        method="POST", url="/api/validate-cpf", body=None, headers=None
-    ):
+    def _make_request(method="POST", url="/api/validate-cpf", body=None, headers=None):
         headers = headers or {"Content-Type": "application/json"}
         if body is not None and isinstance(body, dict):
             body = json.dumps(body)
