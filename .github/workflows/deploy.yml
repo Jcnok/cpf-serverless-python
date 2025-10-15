@@ -20,8 +20,18 @@ jobs:
         run: curl -sSL https://install.python-poetry.org | python3 -
       - name: Instalar dependências (Poetry)
         run: poetry install --no-interaction --no-root
-      - name: Checar formatação com Black
-        run: poetry run black --check .
+      - name: Formatar código com Black
+        run: poetry run black .
+      - name: Fazer commit e push das alterações de formatação
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          if ! git diff --quiet; then
+            git commit -am "style: Formata o código com black"
+            git push
+          else
+            echo "Nenhuma alteração de formatação para fazer commit."
+          fi
       - name: Checar linting com Flake8
         run: poetry run flake8 .
       - name: Rodar testes
